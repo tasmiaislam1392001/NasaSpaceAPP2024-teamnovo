@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced SDG Chatbot</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        #chat-container {
+            width: 400px;
+            height: 600px;
+            background-color: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        #chat-box {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            border-bottom: 2px solid #ddd;
+        }
+        #chat-box .message {
+            margin-bottom: 20px;
+        }
+        .message.bot {
+            text-align: left;
+            color: #333;
+        }
+        .message.user {
+            text-align: right;
+            color: #007BFF;
+        }
+        #input-box {
+            display: flex;
+            padding: 10px;
+        }
+        #user-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        #send-btn {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="chat-container">
+        <div id="chat-box">
+            <div class="message bot">
+                <p>Hi! I'm your SDG chatbot. Ask me about the Sustainable Development Goals (SDGs) by specifying a goal number or a general question about the SDGs!</p>
+            </div>
+        </div>
+        <div id="input-box">
+            <input type="text" id="user-input" placeholder="Ask about SDGs..." />
+            <button id="send-btn">Send</button>
+        </div>
+    </div>
+
+    <script>
+        // Expanded SDG information with detailed stats and facts
+        const sdgInfo = {
+            "goal 1": `*Goal 1: End poverty in all its forms everywhere*
+Poverty is more than the lack of income. It includes hunger, lack of shelter, and limited access to health services. 
+- In 2015, about 10% of the world’s population lived on less than $1.90 per day.
+- Social protection programs have been proven to reduce poverty but are often underfunded.
+- Eradicating poverty also requires economic growth and support for sustainable livelihoods.`,
+            "goal 2": `*Goal 2: End hunger, achieve food security, and promote sustainable agriculture*
+Hunger remains one of the most urgent development challenges.
+- 690 million people were undernourished in 2019.
+- The world produces enough food, but access is unequal, especially in conflict areas.
+- Sustainable farming practices, including organic farming and soil restoration, are crucial for long-term food security.`,
+            "goal 3": `*Goal 3: Ensure healthy lives and promote well-being for all at all ages*
+Health is fundamental to sustainable development. 
+- Since 1990, child mortality has been cut by half, but 5.3 million children under age 5 still died in 2018.
+- HIV, tuberculosis, and malaria deaths have been reduced, yet access to healthcare remains unequal, especially in developing countries.
+- Universal health coverage (UHC) is a key to ensuring that everyone gets the healthcare they need without suffering financial hardship.`,
+            "goal 4": `*Goal 4: Ensure inclusive and equitable quality education and promote lifelong learning opportunities for all*
+Education is a powerful tool to escape poverty and reduce inequalities.
+- In 2019, 258 million children and youth were out of school, including 59 million of primary school age.
+- Quality education should be accessible to all, with a focus on gender equality and teacher quality.
+- The COVID-19 pandemic has disrupted education for millions of children, making the goal even more critical.`,
+            "goal 5": `*Goal 5: Achieve gender equality and empower all women and girls*
+Gender equality is a fundamental human right and is necessary for a peaceful, prosperous world.
+- Globally, 1 in 3 women has experienced physical or sexual violence.
+- Women and girls carry out 75% of unpaid care work worldwide.
+- Empowering women includes addressing legal discrimination, access to education, healthcare, and economic opportunities.`,
+            "goal 6": `*Goal 6: Ensure availability and sustainable management of water and sanitation for all*
+Water is essential for human survival and the health of ecosystems.
+- 2.2 billion people lack access to safely managed drinking water.
+- 4.2 billion people lack safely managed sanitation services.
+- Ensuring sustainable water management involves protecting ecosystems, reducing pollution, and investing in efficient infrastructure.`,
+            "goal 7": `*Goal 7: Ensure access to affordable, reliable, sustainable, and modern energy for all*
+Energy is essential for modern life, from lighting homes to powering hospitals.
+- 759 million people still have no access to electricity, with 75% of them living in Sub-Saharan Africa.
+- Renewable energy sources, such as wind and solar, are key to reducing greenhouse gas emissions and combatting climate change.`,
+            "goal 8": `*Goal 8: Promote sustained, inclusive, and sustainable economic growth, full and productive employment, and decent work for all*
+Economic growth must be inclusive to provide jobs and improve living standards.
+- The global unemployment rate increased to 5.6% in 2020 due to COVID-19.
+- More than 470 million jobs are needed for new entrants to the labor market between 2016 and 2030.
+- Supporting small and medium-sized enterprises is key to creating employment opportunities.`,
+            "goal 9": `*Goal 9: Build resilient infrastructure, promote inclusive and sustainable industrialization, and foster innovation*
+Infrastructure and industrialization drive economic development and human well-being.
+- 1 in 5 people worldwide still lacks access to mobile broadband networks.
+- Promoting innovative technologies and providing financial support to developing nations can foster sustainable industrial growth.`,
+            "goal 10": `*Goal 10: Reduce inequality within and among countries*
+Inequality persists in income, gender, disability, race, ethnicity, and more.
+- Income inequality has been rising in many countries.
+- Reducing inequality requires targeted policies that focus on disadvantaged populations, access to economic resources, and more inclusive social policies.`,
+            "goal 11": `*Goal 11: Make cities and human settlements inclusive, safe, resilient, and sustainable*
+Urbanization is one of the most transformative trends of the 21st century.
+- By 2030, around 60% of the world’s population is expected to live in urban areas.
+- Ensuring sustainable urbanization involves creating affordable housing, green spaces, and efficient transport systems.`,
+            "goal 12": `*Goal 12: Ensure sustainable consumption and production patterns*
+Unsustainable consumption and production patterns are the root causes of climate change, biodiversity loss, and pollution.
+- Food waste amounts to about 1.3 billion tons per year, while 820 million people are undernourished.
+- Reducing waste and encouraging recycling is critical to lowering the impact of consumption on the environment.`,
+            "goal 13": `*Goal 13: Take urgent action to combat climate change and its impacts*
+Climate change is one of the greatest challenges of our time.
+- The world is not on track to meet the goals of the Paris Agreement, and global warming could exceed 3°C by 2100.
+- Rapid, far-reaching changes in energy systems, cities, and industries are needed to limit global warming to 1.5°C.`,
+            "goal 14": `*Goal 14: Conserve and sustainably use the oceans, seas, and marine resources*
+Oceans are vital to human well-being, providing food, energy, and climate regulation.
+- Overfishing and marine pollution threaten ecosystems and livelihoods.
+- Protecting marine areas, reducing plastic pollution, and promoting sustainable fisheries are essential steps.`,
+            "goal 15": `*Goal 15: Protect, restore, and promote sustainable use of terrestrial ecosystems*
+Forests, wetlands, drylands, and mountains are under threat from deforestation, desertification, and biodiversity loss.
+- Around 13 million hectares of forest are lost each year.
+- Land degradation and the loss of biodiversity undermine food security and drive mass migration.`,
+            "goal 16": `*Goal 16: Promote peaceful and inclusive societies, provide access to justice, and build accountable institutions*
+Peaceful, just, and inclusive societies are necessary for sustainable development.
+- More than 70 million people have been forcibly displaced by conflict and persecution.
+- Reducing violence, promoting the rule of law, and ensuring equal access to justice are critical to building peaceful societies.`,
+            "goal 17": `*Goal 17: Strengthen the means of implementation and revitalize the Global Partnership for Sustainable Development*
+Achieving the SDGs requires collaboration between governments, private sectors, civil society, and international organizations.
+- Development aid plays a key role in supporting developing nations, but financial resources have been falling short of commitments.
+- Strengthening global partnerships, improving data collection, and ensuring effective governance are crucial for the successful implementation of the SDGs.`
+        };
+
+        const chatBox = document.getElementById('chat-box');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+
+        // Function to create and append a new chat message
+        function addMessage(content, sender = 'bot') {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender);
+            messageDiv.innerHTML = <p>${content}</p>;
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Function to handle user input and bot response
+        function handleUserInput() {
+            const userQuestion = userInput.value.toLowerCase().trim();
+            if (userQuestion === '') return;
+
+            // Display the user's message
+            addMessage(userQuestion, 'user');
+            userInput.value = '';
+
+            // Default response if input is not recognized
+            let botResponse = "Sorry, I can only answer questions about the SDGs. Try asking about 'goal 1' to 'goal 17' or general SDG questions.";
+
+            // Check if the user's input contains a specific goal number
+            Object.keys(sdgInfo).forEach(goal => {
+                if (userQuestion.includes(goal)) {
+                    botResponse = sdgInfo[goal];
+                }
+            });
+
+            // General SDG information
+            if (userQuestion.includes('sdg') || userQuestion.includes('sustainable development goals')) {
+                botResponse = "The Sustainable Development Goals (SDGs) are a set of 17 global goals set by the United Nations to achieve a better and more sustainable future for all. They address global challenges like poverty, inequality, climate change, environmental degradation, peace, and justice.";
+            }
+
+            // Add bot response
+            setTimeout(() => {
+                addMessage(botResponse, 'bot');
+            }, 500);  // Simulate delay
+        }
+
+        // Event listener for the send button
+        sendBtn.addEventListener('click', handleUserInput);
+
+        // Allow pressing Enter to send a message
+        userInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                handleUserInput();
+            }
+        });
+    </script>
+
+</body>
+</html>
