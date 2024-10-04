@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deforestation Map</title>
+
+    <!-- Leaflet CSS for map rendering -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    
+    <style>
+        /* Map container styling */
+        #map {
+            height: 100vh; /* Full screen height */
+            width: 100vw;  /* Full screen width */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Map Container -->
+    <div id="map"></div>
+
+    <!-- Leaflet JavaScript for map functionality -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <script>
+        // Initialize the map centered on Bangladesh
+        var map = L.map('map').setView([23.6850, 90.3563], 5); // Center on Bangladesh with zoom level 5
+
+        // Add OpenStreetMap tiles as the base layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Country data for Bangladesh, India, and Nepal
+        var countryData = {
+            "Bangladesh": {
+                "coords": [23.6850, 90.3563],
+                "deforestation": "11.2%",
+                "water_solution": "85%",
+                "gender_inequality": "0.536 (2020 GII)",
+                "poverty": "20.5%"
+            },
+            "India": {
+                "coords": [20.5937, 78.9629],
+                "deforestation": "21.6%",
+                "water_solution": "88%",
+                "gender_inequality": "0.488 (2020 GII)",
+                "poverty": "22%"
+            },
+            "Nepal": {
+                "coords": [28.3949, 84.1240],
+                "deforestation": "14.3%",
+                "water_solution": "75%",
+                "gender_inequality": "0.479 (2020 GII)",
+                "poverty": "25.2%"
+            }
+        };
+
+        // Function to create popup content dynamically
+        function createPopupContent(country, data) {
+            return `
+                <h3>${country}</h3>
+                <p><b>Deforestation:</b> ${data.deforestation}</p>
+                <p><b>Water Solution:</b> ${data.water_solution}</p>
+                <p><b>Gender Inequality Index (GII):</b> ${data.gender_inequality}</p>
+                <p><b>Poverty Rate:</b> ${data.poverty}</p>
+            `;
+        }
+
+        // Add clickable markers for each country
+        Object.keys(countryData).forEach(function(country) {
+            var data = countryData[country];
+
+            // Create visible markers for each country
+            var marker = L.marker(data.coords).addTo(map);
+
+            // Bind a popup to each marker displaying relevant data
+            marker.bindPopup(createPopupContent(country, data));
+            
+            // Optional: zoom the map to the country marker when clicked
+            marker.on('click', function() {
+                map.setView(marker.getLatLng(), 6); // Zoom in when clicked
+            });
+        });
+
+        // Optionally, zoom the map to fit all markers (Bangladesh, India, Nepal)
+        var bounds = L.latLngBounds([
+            [23.6850, 90.3563],  // Bangladesh
+            [20.5937, 78.9629],  // India
+            [28.3949, 84.1240]   // Nepal
+        ]);
+        map.fitBounds(bounds);
+
+    </script>
+</body>
+</html>
